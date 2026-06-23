@@ -1,0 +1,9 @@
+{
+    "admin_user": "admin",
+    "admin_pwd": "21232f297a57a5a743894a0e4a801fc3",
+    "crawl_interval": 15,
+    "max_news": 2000,
+    "page_size": 80,
+    "request_timeout": 10,
+    "allow_industries": ["政治","经济","军事","金融","股票","科技","医疗","娱乐","体育","社会"]
+}

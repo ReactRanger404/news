@@ -1,0 +1,112 @@
+[
+    {
+        "id": "src_001",
+        "name": "36氪",
+        "url": "https://www.36kr.com/feed",
+        "industry": "科技",
+        "status": "enable",
+        "remark": "36氪RSS，科技创投新闻",
+        "create_time": "2026-06-20 10:00:00",
+        "last_check": "2026-06-23 10:00:00",
+        "is_alive": true
+    },
+    {
+        "id": "src_002",
+        "name": "InfoQ中文",
+        "url": "https://www.infoq.cn/feed",
+        "industry": "科技",
+        "status": "enable",
+        "remark": "InfoQ中文RSS，软件开发新闻",
+        "create_time": "2026-06-20 10:00:00",
+        "last_check": "2026-06-23 10:00:00",
+        "is_alive": true
+    },
+    {
+        "id": "src_003",
+        "name": "爱范儿",
+        "url": "https://www.ifanr.com/feed",
+        "industry": "科技",
+        "status": "enable",
+        "remark": "爱范儿RSS，科技生活方式",
+        "create_time": "2026-06-20 10:00:00",
+        "last_check": "2026-06-23 10:00:00",
+        "is_alive": true
+    },
+    {
+        "id": "src_004",
+        "name": "钛媒体",
+        "url": "https://www.tmtpost.com/rss",
+        "industry": "科技",
+        "status": "enable",
+        "remark": "钛媒体RSS，科技财经新闻",
+        "create_time": "2026-06-20 10:00:00",
+        "last_check": "2026-06-23 10:00:00",
+        "is_alive": true
+    },
+    {
+        "id": "src_005",
+        "name": "品玩",
+        "url": "https://www.pingwest.com/feed",
+        "industry": "科技",
+        "status": "enable",
+        "remark": "品玩RSS，科技新闻",
+        "create_time": "2026-06-20 10:00:00",
+        "last_check": "2026-06-23 10:00:00",
+        "is_alive": true
+    },
+    {
+        "id": "src_006",
+        "name": "IT之家",
+        "url": "https://www.ithome.com/rss/",
+        "industry": "科技",
+        "status": "enable",
+        "remark": "IT之家RSS，科技数码新闻",
+        "create_time": "2026-06-20 10:00:00",
+        "last_check": "2026-06-23 10:00:00",
+        "is_alive": true
+    },
+    {
+        "id": "src_007",
+        "name": "第一财经",
+        "url": "https://www.yicai.com/feed",
+        "industry": "经济",
+        "status": "enable",
+        "remark": "第一财经RSS，财经新闻",
+        "create_time": "2026-06-20 10:00:00",
+        "last_check": "2026-06-23 10:00:00",
+        "is_alive": true
+    },
+    {
+        "id": "src_008",
+        "name": "澎湃新闻",
+        "url": "https://www.thepaper.cn/rss.xml",
+        "industry": "社会",
+        "status": "enable",
+        "remark": "澎湃新闻RSS，社会新闻",
+        "create_time": "2026-06-20 10:00:00",
+        "last_check": "2026-06-23 10:00:00",
+        "is_alive": true
+    },
+    {
+        "id": "src_009",
+        "name": "小众软件",
+        "url": "https://feed.appinn.com/",
+        "industry": "科技",
+        "status": "enable",
+        "remark": "小众软件RSS，应用推荐",
+        "create_time": "2026-06-20 10:00:00",
+        "last_check": "2026-06-23 10:00:00",
+        "is_alive": true
+    },
+    {
+        "id": "src_010",
+        "name": "简书",
+        "url": "https://www.jianshu.com/rss",
+        "industry": "社会",
+        "status": "enable",
+        "remark": "简书RSS，文章精选",
+        "create_time": "2026-06-20 10:00:00",
+        "last_check": "2026-06-23 10:00:00",
+        "is_alive": true
+    }
+]
