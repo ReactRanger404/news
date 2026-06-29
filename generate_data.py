@@ -229,7 +229,9 @@ for i in range(2000):
     pub_time = now - timedelta(minutes=pub_offset)
 
     domain = source_domains.get(src_name, 'https://news.example.com')
-    article_url = domain
+    # 模拟数据不设具体文章链接，点击后弹窗显示详情
+    # 真实爬取的RSS数据会有正确文章链接
+    article_url = ''
 
     desc = f'据{src_name}报道，{title}。相关领域专家表示，这一进展将对行业产生深远影响。相关分析人士指出，这一趋势值得持续关注。'
 
