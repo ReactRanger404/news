@@ -437,6 +437,15 @@ function merge_news($existing, $new_items, $source) {
         $url_key = md5($item['url']);
         if (isset($existing_urls[$url_key])) continue;
 
+        // 描述为空时用标题补全（确保首页不显示空白）
+        $description = $item['description'] ?? '';
+        if (empty($description)) {
+            $description = $item['title'];
+        }
+
+        // 图片为空时用占位图
+        $image = $item['image'] ?? '';
+
         $existing[] = [
             'id' => gen_id('news'),
             'industry' => $source['industry'],
@@ -444,8 +453,8 @@ function merge_news($existing, $new_items, $source) {
             'source_url' => $source['url'],
             'title' => $item['title'],
             'url' => $item['url'],
-            'description' => $item['description'] ?? '',
-            'image' => $item['image'] ?? '',
+            'description' => $description,
+            'image' => $image,
             'publish_time' => $item['publish_time'],
             'crawl_time' => date('Y-m-d H:i:s'),
             'status' => 'active',
