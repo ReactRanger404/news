@@ -323,6 +323,54 @@ function extract_rss_image($item) {
 }
 
 /**
+ * 从文章页面提取 Open Graph 图片
+ * 当RSS未提供图片时，直接抓取原文HTML提取第一张图
+ */
+function fetch_og_image($url) {
+    if (empty($url)) return '';
+
+    // 只获取页面头部（通过限制下载量提速）
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 4,
+        CURLOPT_CONNECTTIMEOUT => 4,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_MAXREDIRS => 3,
+        CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_SSL_VERIFYHOST => false,
+        CURLOPT_BUFFERSIZE => 128000,
+        CURLOPT_RANGE => '0-128000',
+        CURLOPT_HTTPHEADER => [
+            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language: zh-CN,zh;q=0.9,en;q=0.8',
+        ],
+    ]);
+    $body = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($http_code >= 400 || empty($body)) return '';
+
+    // 1. 提取 og:image
+    if (preg_match('/<meta\s+property=["\']og:image["\']\s+content=["\']([^"\']+)["\']/is', $body, $m)) {
+        return $m[1];
+    }
+    // 2. 提取 twitter:image
+    if (preg_match('/<meta\s+name=["\']twitter:image["\']\s+content=["\']([^"\']+)["\']/is', $body, $m)) {
+        return $m[1];
+    }
+    // 3. 提取第一张图片
+    if (preg_match('/<img[^>]+src=["\']([^"\']+\.(?:jpg|jpeg|png|gif|webp))["\']/i', $body, $m)) {
+        return $m[1];
+    }
+
+    return '';
+}
+
+/**
  * 解析HTML页面中的新闻链接
  */
 function parse_html($html, $source) {
@@ -443,8 +491,13 @@ function merge_news($existing, $new_items, $source) {
             $description = $item['title'];
         }
 
-        // 图片为空时用占位图
+        // 图片为空时尝试从原文抓取 Open Graph 图片
         $image = $item['image'] ?? '';
+        if (empty($image) && !empty($item['url'])) {
+            $image = fetch_og_image($item['url']);
+            // 每抓一张图间隔300ms，防止被封
+            usleep(300000);
+        }
 
         $existing[] = [
             'id' => gen_id('news'),
