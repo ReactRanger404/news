@@ -337,6 +337,20 @@ function pagination_html($current, $total, $base_url) {
     return $html;
 }
 
+// ---------- 图片处理 ----------
+
+/**
+ * 获取新闻图片URL，无图片时返回占位图
+ */
+function get_news_image($item) {
+    if (!empty($item['image'])) {
+        return $item['image'];
+    }
+    // 根据新闻ID生成稳定的占位图
+    $seed = $item['id'] ?? md5($item['title'] ?? 'default');
+    return 'https://picsum.photos/seed/' . $seed . '/400/250';
+}
+
 /**
  * 版权声明
  */

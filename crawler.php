@@ -159,6 +159,7 @@ function parse_rss($xml_content, $source) {
             $link = trim((string)$item->link);
             $pub_date = trim((string)$item->pubDate);
             $description = trim(strip_tags((string)$item->description));
+            $image = extract_rss_image($item);
 
             if (empty($title) || empty($link)) continue;
 
@@ -167,6 +168,7 @@ function parse_rss($xml_content, $source) {
                 'url' => $link,
                 'publish_time' => parse_rss_date($pub_date),
                 'description' => $description,
+                'image' => $image,
             ];
         }
     }
@@ -192,6 +194,7 @@ function parse_rss($xml_content, $source) {
             }
 
             $description = trim(strip_tags((string)$entry->summary ?? (string)$entry->content ?? ''));
+            $image = extract_rss_image($entry);
 
             if (empty($title) || empty($link)) continue;
 
@@ -200,6 +203,7 @@ function parse_rss($xml_content, $source) {
                 'url' => $link,
                 'publish_time' => parse_rss_date($pub_date),
                 'description' => $description,
+                'image' => $image,
             ];
         }
     }
@@ -211,6 +215,7 @@ function parse_rss($xml_content, $source) {
             $link = trim((string)$item->link);
             $pub_date = '';
             $description = trim(strip_tags((string)$item->description ?? ''));
+            $image = extract_rss_image($item);
 
             $dc_ns = $item->children('http://purl.org/dc/elements/1.1/');
             if ($dc_ns && $dc_ns->count() > 0) {
@@ -225,6 +230,7 @@ function parse_rss($xml_content, $source) {
                 'url' => $link,
                 'publish_time' => parse_rss_date($pub_date),
                 'description' => $description,
+                'image' => $image,
             ];
         }
     }
@@ -264,6 +270,56 @@ function parse_rss_date($date_str) {
     }
 
     return date('Y-m-d H:i:s');
+}
+
+/**
+ * 从RSS条目中提取图片URL
+ * 支持：enclosure, media:content, media:thumbnail, 以及description中的第一张图
+ */
+function extract_rss_image($item) {
+    // 1. 检查 enclosure
+    if (!empty($item->enclosure)) {
+        $attrs = $item->enclosure->attributes();
+        $type = (string)($attrs['type'] ?? '');
+        if (strpos($type, 'image/') === 0) {
+            $url = (string)($attrs['url'] ?? '');
+            if (!empty($url)) return $url;
+        }
+    }
+
+    // 2. 检查 media:content
+    $namespaces = $item->getNamespaces(true);
+    foreach (['media', 'mediaContent'] as $ns) {
+        if (!empty($namespaces[$ns])) {
+            $media = $item->children($namespaces[$ns]);
+            if (!empty($media->content)) {
+                foreach ($media->content as $mc) {
+                    $attrs = $mc->attributes();
+                    $url = (string)($attrs['url'] ?? '');
+                    if (!empty($url)) return $url;
+                }
+            }
+            if (!empty($media->thumbnail)) {
+                $attrs = $media->thumbnail->attributes();
+                $url = (string)($attrs['url'] ?? '');
+                if (!empty($url)) return $url;
+            }
+        }
+    }
+
+    // 3. 从 content:encoded 或 description 中提取第一张图片
+    $html_sources = [
+        (string)$item->children('http://purl.org/rss/1.0/modules/content/')->encoded,
+        (string)$item->description,
+    ];
+    foreach ($html_sources as $html) {
+        if (empty($html)) continue;
+        if (preg_match('/<img[^>]+src=["\']([^"\']+)["\']/i', $html, $m)) {
+            return $m[1];
+        }
+    }
+
+    return '';
 }
 
 /**
@@ -312,11 +368,26 @@ function parse_html($html, $source) {
             if (isset($seen_urls[$url_key])) continue;
             $seen_urls[$url_key] = true;
 
+            // 尝试从节点附近提取图片
+            $image = '';
+            $parent = $node->parentNode;
+            if ($parent) {
+                $imgs = $xpath->query('.//img', $parent);
+                foreach ($imgs as $img) {
+                    $src = $img->getAttribute('src');
+                    if (!empty($src) && !strpos($src, 'data:image')) {
+                        $image = resolve_url($source['url'], $src);
+                        break;
+                    }
+                }
+            }
+
             $items[] = [
                 'title' => $title,
                 'url' => $url,
                 'publish_time' => date('Y-m-d H:i:s'),
                 'description' => '',
+                'image' => $image,
             ];
 
             // 限制每页最大提取数
@@ -374,6 +445,7 @@ function merge_news($existing, $new_items, $source) {
             'title' => $item['title'],
             'url' => $item['url'],
             'description' => $item['description'] ?? '',
+            'image' => $item['image'] ?? '',
             'publish_time' => $item['publish_time'],
             'crawl_time' => date('Y-m-d H:i:s'),
             'status' => 'active',

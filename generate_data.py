@@ -212,6 +212,9 @@ templates = [
     '数据要素市场化配置改革加快推进',
 ]
 
+# 图片风格标签，用于生成多样化的占位图
+image_styles = ['nature', 'city', 'tech', 'business', 'people', 'abstract', 'architect']
+
 news_list = []
 industries = list(sources.keys())
 now = datetime.now()
@@ -226,10 +229,13 @@ for i in range(2000):
     pub_time = now - timedelta(minutes=pub_offset)
 
     domain = source_domains.get(src_name, 'https://news.example.com')
-    # 使用来源网站首页作为链接，确保点击能打开真实网站
     article_url = domain
 
     desc = f'据{src_name}报道，{title}。相关领域专家表示，这一进展将对行业产生深远影响。相关分析人士指出，这一趋势值得持续关注。'
+
+    # 使用 picsum.photos 生成随机但稳定的占位图
+    seed = f'news_{i:04d}'
+    image_url = f'https://picsum.photos/seed/{seed}/400/250'
 
     news_list.append({
         'id': f'news_{i+1:04d}',
@@ -239,6 +245,7 @@ for i in range(2000):
         'title': title,
         'url': article_url,
         'description': desc,
+        'image': image_url,  # 新增图片字段
         'publish_time': pub_time.strftime('%Y-%m-%d %H:%M:%S'),
         'crawl_time': pub_time.strftime('%Y-%m-%d %H:%M:%S'),
         'status': 'active'
@@ -246,10 +253,12 @@ for i in range(2000):
 
 news_list.sort(key=lambda x: x['publish_time'], reverse=True)
 
-output_path = r'C:\Users\z2256\Desktop\news\data.json'
+output_path = __DIR__ + '/data.json' if '__DIR__' in dir() else r'E:\git_warehouse\news\data.json'
+# 使用绝对路径
+output_path = r'E:\git_warehouse\news\data.json'
 with open(output_path, 'w', encoding='utf-8') as f:
     json.dump(news_list, f, ensure_ascii=False, indent=4)
 
-print(f'Generated {len(news_list)} news items')
+print(f'Generated {len(news_list)} news items with images')
 print(f'Pages: {2000/80:.0f} pages (80 per page)')
-print(f'All items have real-source-domain URLs')
+print(f'All items have placeholder images from picsum.photos')
