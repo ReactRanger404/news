@@ -356,15 +356,21 @@ function pagination_html($current, $total, $base_url) {
 // ---------- 图片处理 ----------
 
 /**
- * 获取新闻图片URL，无图片时返回占位图
+ * 获取新闻图片URL，无图片时返回内联SVG占位图（无需外部请求）
  */
 function get_news_image($item) {
     if (!empty($item['image'])) {
         return $item['image'];
     }
-    // 根据新闻ID生成稳定的占位图
-    $seed = $item['id'] ?? md5($item['title'] ?? 'default');
-    return 'https://picsum.photos/seed/' . $seed . '/400/250';
+    // 生成一个简单的内联SVG占位图（无外部依赖，国内网络友好）
+    $seed = crc32($item['id'] ?? $item['title'] ?? '0');
+    $hue = $seed % 360;
+    $svg = '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="250" viewBox="0 0 400 250">'
+        . '<rect width="400" height="250" fill="hsl(' . $hue . ',20%,95%)"/>'
+        . '<text x="200" y="120" text-anchor="middle" font-size="64" fill="hsl(' . $hue . ',30%,75%)">📰</text>'
+        . '<text x="200" y="170" text-anchor="middle" font-size="14" fill="hsl(' . $hue . ',20%,70%)" font-family="sans-serif">暂无图片</text>'
+        . '</svg>';
+    return 'data:image/svg+xml;charset=utf-8,' . rawurlencode($svg);
 }
 
 /**

@@ -271,9 +271,11 @@ $page_news = array_slice($filtered, $offset, $page_size);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 32px;
-            color: #ccc;
-            background: linear-gradient(135deg, #f5f0e8, #e8e0d0);
+            font-size: 36px;
+            color: #ddd;
+            background: linear-gradient(135deg, #f9f5ee, #f0e8d8);
+            border-radius: 6px;
+            user-select: none;
         }
 
         /* 内容区域 */
@@ -703,7 +705,9 @@ $page_news = array_slice($filtered, $offset, $page_size);
             <button class="modal-close" onclick="closeNews()">✕</button>
         </div>
         <div class="modal-body">
-            <img id="modalImage" class="modal-image" src="" alt="新闻图片" style="display:none;">
+            <div id="modalImageWrap" style="display:none;">
+                <img id="modalImage" class="modal-image" src="" alt="新闻图片">
+            </div>
             <div class="modal-meta">
                 <span class="tag tag-industry" id="modalIndustry"></span>
                 <span class="tag tag-source" id="modalSource"></span>
@@ -748,11 +752,12 @@ function openNews(el) {
     document.getElementById('modalLinkWrap').style.display = 'none';
 
     var imgEl = document.getElementById('modalImage');
-    if (image) {
+    var imgWrap = document.getElementById('modalImageWrap');
+    if (image && image.indexOf('data:image/svg') === -1) {
         imgEl.src = image;
-        imgEl.style.display = 'block';
+        imgWrap.style.display = 'block';
     } else {
-        imgEl.style.display = 'none';
+        imgWrap.style.display = 'none';
     }
 
     document.getElementById('newsModal').classList.add('active');
@@ -788,6 +793,7 @@ function render_news_list($news_items, $offset, $page) {
     foreach ($news_items as $item):
         $time = format_time($item['publish_time'] ?? $item['crawl_time']);
         $has_url = !empty($item['url']);
+        $has_real_image = !empty($item['image']);
         $img = get_news_image($item);
     ?>
     <div class="news-item" onclick="openNews(this)"
@@ -797,13 +803,17 @@ function render_news_list($news_items, $offset, $page) {
          data-source="<?php echo xss_clean($item['source_name'] ?? ''); ?>"
          data-time="<?php echo xss_clean($item['publish_time'] ?? $item['crawl_time'] ?? ''); ?>"
          data-url="<?php echo xss_clean($item['url'] ?? ''); ?>"
-         data-image="<?php echo xss_clean($img); ?>">
-        <!-- 缩略图 -->
+         data-image="<?php echo $has_real_image ? xss_clean($item['image']) : ''; ?>">
+        <!-- 缩略图：有真实图片就显示，否则用纯CSS占位 -->
         <div class="news-thumb">
-            <img src="<?php echo xss_clean($img); ?>"
+            <?php if ($has_real_image): ?>
+            <img src="<?php echo xss_clean($item['image']); ?>"
                  alt="<?php echo xss_clean($item['title']); ?>"
                  loading="lazy"
                  onerror="this.parentElement.innerHTML='<div class=\'img-placeholder\'>📰</div>'">
+            <?php else: ?>
+            <div class="img-placeholder">📰</div>
+            <?php endif; ?>
         </div>
         <!-- 内容 -->
         <div class="news-content">
