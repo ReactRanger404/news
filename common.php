@@ -16,12 +16,28 @@ set_error_handler(function ($severity, $message, $file, $line) {
 
 /**
  * 自动爬取调度：每次页面加载时检查是否需要爬取
- * 距离上次爬取超过设定间隔（默认15分钟）时，自动在后台触发爬取
+ *
+ * - 本地环境：距离上次爬取超过设定间隔时，在后台触发爬取
+ * - Railway等云平台：不支持后台进程，请在Railway后台配置Cron Job，
+ *   或使用 cron-job.org 定时访问 /cron.php?token=你的密钥
  */
 function check_auto_crawl() {
     $config = json_read(__DIR__ . '/config.json');
     $interval = ($config['crawl_interval'] ?? 15) * 60;
     $marker_file = __DIR__ . '/.last_crawl';
+
+    // 检测是否为Railway云环境（不支持后台进程）
+    if (getenv('RAILWAY_SERVICE_ID') !== false || getenv('RAILWAY_ENVIRONMENT') !== false) {
+        // 仅更新标记，不尝试后台启动（云平台不支持）
+        $last_crawl = 0;
+        if (file_exists($marker_file)) {
+            $last_crawl = (int) file_get_contents($marker_file);
+        }
+        if ((time() - $last_crawl) >= $interval) {
+            file_put_contents($marker_file, (string) time(), LOCK_EX);
+        }
+        return;
+    }
 
     $last_crawl = 0;
     if (file_exists($marker_file)) {
