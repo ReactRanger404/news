@@ -337,20 +337,19 @@ function extract_rss_image($item) {
 function fetch_og_image($url) {
     if (empty($url)) return '';
 
-    // 只获取页面头部（通过限制下载量提速）
+    // 下载页面内容（不限大小，设短超时）
     $ch = curl_init();
     curl_setopt_array($ch, [
         CURLOPT_URL => $url,
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT => 4,
+        CURLOPT_TIMEOUT => 5,
         CURLOPT_CONNECTTIMEOUT => 4,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_MAXREDIRS => 3,
         CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
         CURLOPT_SSL_VERIFYPEER => false,
         CURLOPT_SSL_VERIFYHOST => false,
-        CURLOPT_BUFFERSIZE => 128000,
-        CURLOPT_RANGE => '0-128000',
+        CURLOPT_BUFFERSIZE => 524288,
         CURLOPT_HTTPHEADER => [
             'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             'Accept-Language: zh-CN,zh;q=0.9,en;q=0.8',
@@ -362,25 +361,45 @@ function fetch_og_image($url) {
 
     if ($http_code >= 400 || empty($body)) return '';
 
+    // 补全协议相对URL
+    $resolve_url = function($img_url) use ($url) {
+        $img_url = trim($img_url);
+        if (strpos($img_url, '//') === 0) return 'https:' . $img_url;
+        if (strpos($img_url, '/') === 0) {
+            $parts = parse_url($url);
+            return ($parts['scheme'] ?? 'https') . '://' . ($parts['host'] ?? '') . $img_url;
+        }
+        return $img_url;
+    };
+
     // 判断是否为logo/默认图（跳过）
-    $is_logo_image = function($url) {
-        return preg_match('/\b(logo|icon|avatar|favicon|default|placeholder|banner)\b/i', $url);
+    $is_logo_image = function($img_url) {
+        return preg_match('/\b(logo|icon|avatar|favicon|default|placeholder|banner|wx-test)\b/i', $img_url);
     };
 
     // 1. 提取 og:image
     if (preg_match('/<meta\s+property=["\']og:image["\']\s+content=["\']([^"\']+)["\']/is', $body, $m)) {
-        $img = $m[1];
+        $img = $resolve_url($m[1]);
+        if (!$is_logo_image($img)) return $img;
+    }
+    // 1b. og:image 属性顺序可能交换
+    if (preg_match('/<meta\s+content=["\']([^"\']+\.(?:jpg|jpeg|png|gif|webp))["\']\s+property=["\']og:image["\']/is', $body, $m)) {
+        $img = $resolve_url($m[1]);
         if (!$is_logo_image($img)) return $img;
     }
     // 2. 提取 twitter:image
     if (preg_match('/<meta\s+name=["\']twitter:image["\']\s+content=["\']([^"\']+)["\']/is', $body, $m)) {
-        $img = $m[1];
+        $img = $resolve_url($m[1]);
         if (!$is_logo_image($img)) return $img;
     }
-    // 3. 提取第一张图片
-    if (preg_match('/<img[^>]+src=["\']([^"\']+\.(?:jpg|jpeg|png|gif|webp))["\']/i', $body, $m)) {
-        $img = $m[1];
-        if (!$is_logo_image($img)) return $img;
+    // 3. 提取第一张真实图片（支持src和data-src，跳过小图标）
+    if (preg_match_all('/<(?:img|source)\s+[^>]*(?:src|data-src)=["\']([^"\']+\.(?:jpg|jpeg|png|gif|webp))["\'][^>]*>/is', $body, $matches)) {
+        foreach ($matches[1] as $img_url) {
+            $img_url = $resolve_url($img_url);
+            if (!$is_logo_image($img_url) && !preg_match('/\b(?:avatar|icon|btn|logo|sprite|thumb)\b/i', $img_url)) {
+                return $img_url;
+            }
+        }
     }
 
     return '';
