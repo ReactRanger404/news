@@ -1,0 +1,28 @@
+[
+    {
+        "id": "news_6a41deca07a41_f662e278",
+        "industry": "科技",
+        "source_name": "酷壳",
+        "source_url": "https:\/\/coolshell.cn\/feed",
+        "title": "从一次经历谈 TIME_WAIT 的那些事",
+        "url": "https:\/\/coolshell.cn\/articles\/22263.html",
+        "description": "今天来讲一讲TCP 的 TIME_WAIT 的问题。这个问题尽人皆知，不过，这次遇到的是不太一样的场景，前两天也解决了，正好写篇文章，顺便把 TIME_WAIT...\n Read More  Read More\nThe post 从一次经历谈 TIME_WAIT 的那些事 first appeared on 酷 壳 - CoolShell.",
+        "image": "https:\/\/coolshell.cn\/wp-content\/uploads\/2022\/07\/wall_clock-300x167.jpeg",
+        "publish_time": "2022-07-19 06:43:39",
+        "crawl_time": "2026-06-29 02:56:10",
+        "status": "active"
+    },
+    {
+        "id": "news_6a41ded4155fe_2fed57b5",
+        "industry": "科技",
+        "source_name": "腾讯CDC",
+        "source_url": "https:\/\/cdc.tencent.com\/feed\/",
+        "title": "CDC夜校回顾NO.26｜如何运营一个开源项目、出海产品设计之多语言设计",
+        "url": "https:\/\/cdc.tencent.com\/2022\/07\/19\/cdc%e5%a4%9c%e6%a0%a1%e5%9b%9e%e9%a1%beno-26%ef%bd%9c%e5%a6%82%e4%bd%95%e8%bf%90%e8%90%a5%e4%b8%80%e4%b8%aa%e5%bc%80%e6%ba%90%e9%a1%b9%e7%9b%ae%e3%80%81%e5%87%ba%e6%b5%b7%e4%ba%a7%e5%93%81%e8%ae%be\/",
+        "description": "关于CDC夜校 关键词｜专业 · 跨界 · 探索 · 成长 CDC 被称为用户体验设计界的“黄埔军校”，与我们 [&#8230;]",
+        "image": "https:\/\/cdc-wp-blog-1258344706.cos.ap-guangzhou.myqcloud.com\/production\/wp-content\/uploads\/2022\/04\/wecom-temp-796f89e935b1fd56aec90333211dd5d6.png",
+        "publish_time": "2022-07-19 07:33:11",
+        "crawl_time": "2026-06-29 02:56:20",
+        "status": "active"
+    }
+]

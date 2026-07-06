@@ -12664,3 +12664,4 @@ Bytes: 0xC8 0xED 0xD1 0xC5 in E:\git_warehouse\news\find_sources.php:135
 [2026-07-06 05:37:05] PHP Error: [2] simplexml_load_string(): Entity: line 1: parser error : Start tag expected, '<' not found in Command line code:42
 [2026-07-06 05:37:05] PHP Error: [2] simplexml_load_string(): error code: 502 in Command line code:42
 [2026-07-06 05:37:05] PHP Error: [2] simplexml_load_string(): ^ in Command line code:42
+[2026-07-06 06:12:21] 📦 已归档 141 条旧新闻至 E:\git_warehouse\news/archive/

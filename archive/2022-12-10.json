@@ -1,0 +1,15 @@
+[
+    {
+        "id": "news_6a4b32487ffe8_f6d5713a",
+        "industry": "科技",
+        "source_name": "酷壳",
+        "source_url": "https:\/\/coolshell.cn\/feed",
+        "title": "eBPF 介绍",
+        "url": "https:\/\/coolshell.cn\/articles\/22320.html",
+        "description": "很早前就想写一篇关于eBPF的文章，但是迟迟没有动手，这两天有点时间，所以就来写一篇，这文章主要还是简单的介绍eBPF 是用来干什么的，并通过几个示例来介绍是怎...\n Read More  Read More\nThe post eBPF 介绍 first appeared on 酷 壳 - CoolShell.",
+        "image": "https:\/\/coolshell.cn\/wp-content\/uploads\/2022\/12\/eBPF.jpeg",
+        "publish_time": "2022-12-10 02:38:51",
+        "crawl_time": "2026-07-06 04:42:48",
+        "status": "active"
+    }
+]
