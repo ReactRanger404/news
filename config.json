@@ -4,7 +4,7 @@
     "crawl_interval": 300,
     "max_news": 3500,
     "page_size": 80,
-    "request_timeout": 10,
+    "request_timeout": 5,
     "allow_industries": [
         "政治",
         "经济",
