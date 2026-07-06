@@ -1632,11 +1632,11 @@
         "name": "印记",
         "url": "https:\/\/www.yinji.org\/feed",
         "industry": "科技",
-        "status": "enable",
+        "status": "disable",
         "remark": "印记博客RSS",
         "create_time": "2026-06-29 02:02:55",
         "last_check": "2026-06-29 02:50:30",
-        "is_alive": true
+        "is_alive": false
     },
     {
         "id": "src_150",
@@ -1731,11 +1731,11 @@
         "name": "搜狐财经",
         "url": "https:\/\/business.sohu.com\/rss\/1.xml",
         "industry": "经济",
-        "status": "enable",
+        "status": "disable",
         "remark": "搜狐财经RSS",
         "create_time": "2026-06-29 02:02:55",
         "last_check": "2026-06-29 02:50:35",
-        "is_alive": true
+        "is_alive": false
     },
     {
         "id": "src_159",
@@ -1819,11 +1819,11 @@
         "name": "金十数据",
         "url": "https:\/\/www.jin10.com\/rss\/",
         "industry": "金融",
-        "status": "enable",
+        "status": "disable",
         "remark": "金十数据RSS，实时财经",
         "create_time": "2026-06-29 02:02:55",
         "last_check": "2026-06-29 02:51:08",
-        "is_alive": true
+        "is_alive": false
     },
     {
         "id": "src_167",
@@ -2259,55 +2259,55 @@
         "name": "TechCrunch",
         "url": "https:\/\/techcrunch.com\/feed\/",
         "industry": "科技",
-        "status": "enable",
+        "status": "disable",
         "remark": "TechCrunch科技新闻RSS",
         "create_time": "2026-06-29 02:02:55",
         "last_check": "2026-06-29 02:51:59",
-        "is_alive": true
+        "is_alive": false
     },
     {
         "id": "src_207",
         "name": "The Verge",
         "url": "https:\/\/www.theverge.com\/rss\/index.xml",
         "industry": "科技",
-        "status": "enable",
+        "status": "disable",
         "remark": "The Verge科技RSS",
         "create_time": "2026-06-29 02:02:55",
         "last_check": "2026-06-29 02:52:00",
-        "is_alive": true
+        "is_alive": false
     },
     {
         "id": "src_208",
         "name": "Wired",
         "url": "https:\/\/www.wired.com\/feed\/rss",
         "industry": "科技",
-        "status": "enable",
+        "status": "disable",
         "remark": "Wired科技杂志RSS",
         "create_time": "2026-06-29 02:02:55",
         "last_check": "2026-06-29 02:52:01",
-        "is_alive": true
+        "is_alive": false
     },
     {
         "id": "src_209",
         "name": "Ars Technica",
         "url": "https:\/\/feeds.arstechnica.com\/arstechnica\/index",
         "industry": "科技",
-        "status": "enable",
+        "status": "disable",
         "remark": "Ars Technica科技RSS",
         "create_time": "2026-06-29 02:02:55",
         "last_check": "2026-06-29 02:52:02",
-        "is_alive": true
+        "is_alive": false
     },
     {
         "id": "src_210",
         "name": "Hacker News",
         "url": "https:\/\/hnrss.org\/frontpage",
         "industry": "科技",
-        "status": "enable",
+        "status": "disable",
         "remark": "Hacker News首页RSS",
         "create_time": "2026-06-29 02:02:55",
         "last_check": "2026-06-29 02:52:04",
-        "is_alive": true
+        "is_alive": false
     },
     {
         "id": "src_211",
@@ -2325,11 +2325,11 @@
         "name": "CNBC",
         "url": "https:\/\/www.cnbc.com\/id\/100003114\/device\/rss\/rss.html",
         "industry": "经济",
-        "status": "enable",
+        "status": "disable",
         "remark": "CNBC财经RSS",
         "create_time": "2026-06-29 02:02:55",
         "last_check": "2026-06-29 02:52:13",
-        "is_alive": true
+        "is_alive": false
     },
     {
         "id": "src_213",
@@ -2358,22 +2358,22 @@
         "name": "NASA",
         "url": "https:\/\/www.nasa.gov\/rss\/dyn\/breaking_news.rss",
         "industry": "科技",
-        "status": "enable",
+        "status": "disable",
         "remark": "NASA新闻RSS",
         "create_time": "2026-06-29 02:02:55",
         "last_check": "2026-06-29 02:52:30",
-        "is_alive": true
+        "is_alive": false
     },
     {
         "id": "src_216",
         "name": "Nature",
         "url": "https:\/\/www.nature.com\/nature.rss",
         "industry": "科技",
-        "status": "enable",
+        "status": "disable",
         "remark": "自然杂志RSS",
         "create_time": "2026-06-29 02:02:55",
         "last_check": "2026-06-29 02:52:31",
-        "is_alive": true
+        "is_alive": false
     },
     {
         "id": "src_217",
@@ -2446,11 +2446,11 @@
         "name": "DZone",
         "url": "https:\/\/feeds.dzone.com\/home",
         "industry": "科技",
-        "status": "enable",
+        "status": "disable",
         "remark": "DZone开发者RSS",
         "create_time": "2026-06-29 02:02:55",
         "last_check": "2026-06-29 02:52:46",
-        "is_alive": true
+        "is_alive": false
     },
     {
         "id": "src_224",
@@ -2468,10 +2468,10 @@
         "name": "Smashing Magazine",
         "url": "https:\/\/www.smashingmagazine.com\/feed\/",
         "industry": "科技",
-        "status": "enable",
+        "status": "disable",
         "remark": "Smashing Magazine前端RSS",
         "create_time": "2026-06-29 02:02:55",
         "last_check": "2026-06-29 02:52:48",
-        "is_alive": true
+        "is_alive": false
     }
 ]

@@ -362,17 +362,25 @@ function fetch_og_image($url) {
 
     if ($http_code >= 400 || empty($body)) return '';
 
+    // 判断是否为logo/默认图（跳过）
+    $is_logo_image = function($url) {
+        return preg_match('/\b(logo|icon|avatar|favicon|default|placeholder|banner)\b/i', $url);
+    };
+
     // 1. 提取 og:image
     if (preg_match('/<meta\s+property=["\']og:image["\']\s+content=["\']([^"\']+)["\']/is', $body, $m)) {
-        return $m[1];
+        $img = $m[1];
+        if (!$is_logo_image($img)) return $img;
     }
     // 2. 提取 twitter:image
     if (preg_match('/<meta\s+name=["\']twitter:image["\']\s+content=["\']([^"\']+)["\']/is', $body, $m)) {
-        return $m[1];
+        $img = $m[1];
+        if (!$is_logo_image($img)) return $img;
     }
     // 3. 提取第一张图片
     if (preg_match('/<img[^>]+src=["\']([^"\']+\.(?:jpg|jpeg|png|gif|webp))["\']/i', $body, $m)) {
-        return $m[1];
+        $img = $m[1];
+        if (!$is_logo_image($img)) return $img;
     }
 
     return '';

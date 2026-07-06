@@ -784,7 +784,16 @@ function format_time($time_str) {
 function filter_news($news, $industry, $keyword, $date_from = '', $date_to = '') {
     $result = $news;
     $result = array_filter($result, function ($item) {
-        return ($item['status'] ?? 'active') === 'active';
+        // 状态过滤
+        if (($item['status'] ?? 'active') !== 'active') return false;
+        // 标题质量过滤（跳过短标题、纯数字/符号标题）
+        $title = $item['title'] ?? '';
+        if (mb_strlen($title) < 6) return false;
+        if (preg_match('/^[\d\s\W]+$/u', $title)) return false;
+        // 禁用不安全的源
+        $bad_sources = ['搜狐财经','金十数据','印记','Hacker News'];
+        if (in_array($item['source_name'] ?? '', $bad_sources)) return false;
+        return true;
     });
     if (!empty($industry)) {
         $result = array_filter($result, function ($item) use ($industry) {

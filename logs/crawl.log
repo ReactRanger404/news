@@ -956,3 +956,83 @@
 [2026-07-06 04:30:46] ✅ [CSS-Tricks] 获取成功，新增 15 条
 [2026-07-06 04:30:52] ❌ [Smashing Magazine] 获取失败: Operation timed out after 5003 milliseconds with 690992 out of 1322183 bytes received
 [2026-07-06 04:30:53] ========== 爬取完成: 新增 953 条, 失败 125 个, 耗时 1255.55s ==========
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $total张图 in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $unique种URL in Command line code:23
+[2026-07-06 04:40:00] PHP Error: [2] Undefined variable $cnt次 in Command line code:29

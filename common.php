@@ -356,10 +356,18 @@ function pagination_html($current, $total, $base_url) {
 // ---------- 图片处理 ----------
 
 /**
- * 判断新闻是否有真实图片（不是占位图）
+ * 判断新闻是否有真实图片（不是占位图、不是logo/默认图）
  */
 function has_real_image($item) {
-    return !empty($item['image']) && strpos($item['image'], 'data:image/svg') === false;
+    $img = $item['image'] ?? '';
+    if (empty($img)) return false;
+    if (strpos($img, 'data:image/svg') !== false) return false;
+    // 过滤 logo/图标/默认图
+    if (preg_match('/\b(logo|icon|avatar|favicon|default|wx-test|placeholder|banner)\b/i', $img)) return false;
+    // 过滤小尺寸图片（疑似头像/图标）
+    if (preg_match('/[?&](w|width|size)=\d{1,2}/i', $img)) return false;
+    if (preg_match('/[\/_](?:w_?\d{1,2}|h_?\d{1,2}|s_?\d{1,2})[\/_]/i', $img)) return false;
+    return true;
 }
 
 /**
