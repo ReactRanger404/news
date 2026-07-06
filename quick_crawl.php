@@ -23,7 +23,18 @@ foreach ($sources as $s) {
     // 只保留中文行业
     $cn_inds = ['政治','经济','军事','金融','股票','科技','医疗','娱乐','体育','社会'];
     if (!in_array($s['industry'] ?? '', $cn_inds)) continue;
-    $targets[] = $s;
+    // 额外校验: 确认确实返回RSS内容
+    $test = http_get($s['url'], 4);
+    if (!empty($test['body'])) {
+        $xml = @simplexml_load_string($test['body']);
+        if ($xml !== false) {
+            $cnt = 0;
+            if (!empty($xml->channel->item)) $cnt = $xml->channel->item->count();
+            elseif (!empty($xml->entry)) $cnt = $xml->entry->count();
+            elseif (!empty($xml->item)) $cnt = $xml->item->count();
+            if ($cnt > 0) $targets[] = $s;
+        }
+    }
 }
 
 echo "国内可爬源: " . count($targets) . "/" . count($sources) . PHP_EOL . PHP_EOL;
