@@ -526,8 +526,14 @@ function merge_news($existing, $new_items, $source) {
             $description = $item['title'];
         }
 
-        // 图片为空时尝试从原文抓取 Open Graph 图片
+        // 图片处理：RSS提供的图如果是logo则尝试从原文抓取
         $image = $item['image'] ?? '';
+        if (!empty($image)) {
+            // 检查RSS提供的图是否为logo
+            if (!has_real_image(['image' => $image])) {
+                $image = ''; // 清除logo图，稍后尝试抓取
+            }
+        }
         if (empty($image) && !empty($item['url'])) {
             $image = fetch_og_image($item['url']);
             // 每抓一张图间隔300ms，防止被封
