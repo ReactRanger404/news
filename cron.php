@@ -27,7 +27,8 @@ if (empty($expected_token)) {
 if (empty($token) || $token !== $expected_token) {
     http_response_code(403);
     echo "Forbidden: invalid or missing token\n";
-    log_message("❌ 爬虫触发失败：token无效 (IP: {$_SERVER['REMOTE_ADDR'] ?? 'unknown'})");
+    $remote_ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    log_message("❌ 爬虫触发失败：token无效 (IP: {$remote_ip})");
     exit;
 }
 

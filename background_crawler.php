@@ -2,26 +2,55 @@
 /**
  * 后台爬取守护脚本
  *
- * 使用方法：在终端中运行 php background_crawler.php
- * 会自动每15分钟执行一次爬取任务
- * 关闭终端即停止
+ * 使用方法：
+ *   Windows:     php background_crawler.php
+ *   Linux/Mac:   nohup php background_crawler.php > /dev/null 2>&1 &
+ *
+ * 默认每5小时（300分钟）自动执行一次爬取任务
+ * 按 Ctrl+C 停止
+ *
+ * 本系统仅用于学习和研究目的
  */
+
+// 直接运行，不依赖 common.php（避免 session 冲突）
+$config_file = __DIR__ . '/config.json';
+
+function read_config($file) {
+    if (!file_exists($file)) return [];
+    $fp = fopen($file, 'r');
+    if (!$fp) return [];
+    flock($fp, LOCK_SH);
+    $content = '';
+    while (!feof($fp)) $content .= fread($fp, 8192);
+    flock($fp, LOCK_UN);
+    fclose($fp);
+    return json_decode($content, true) ?: [];
+}
+
+$config = read_config($config_file);
+$interval = ($config['crawl_interval'] ?? 300) * 60; // 默认300分钟 = 5小时
 
 echo "============================================\n";
 echo "  开源情报系统 - 后台爬取守护脚本\n";
-echo "  每15分钟自动执行一次爬取\n";
+echo "  每 " . ($interval / 60) . " 分钟自动执行一次爬取\n";
 echo "  按 Ctrl+C 停止\n";
 echo "============================================\n\n";
 
-$config = json_read(__DIR__ . '/config.json');
-$interval = ($config['crawl_interval'] ?? 15) * 60;
+// 确保 archive 目录存在
+$archive_dir = __DIR__ . '/' . ($config['archive_dir'] ?? 'archive');
+if (!is_dir($archive_dir)) {
+    mkdir($archive_dir, 0755, true);
+    echo "[初始化] 创建归档目录: {$archive_dir}\n";
+}
+
+$run_count = 0;
 
 while (true) {
+    $run_count++;
     $now = date('Y-m-d H:i:s');
-    echo "[$now] 开始执行爬取任务...\n";
+    echo "[$now] === 第 {$run_count} 次爬取开始 ===\n";
 
     try {
-        // 引入爬取脚本
         ob_start();
         include __DIR__ . '/crawler.php';
         $output = ob_get_clean();
@@ -30,12 +59,17 @@ while (true) {
         echo "爬取异常: " . $e->getMessage() . "\n";
     }
 
-    echo "等待 {$interval} 秒后下一次爬取...\n\n";
-    sleep($interval);
+    $next_time = date('Y-m-d H:i:s', time() + $interval);
+    echo "[完成] 等待 " . ($interval / 60) . " 分钟，下一次爬取: {$next_time}\n\n";
+
+    // 使用睡眠循环，每60秒检测一次，支持优雅退出
+    for ($i = 0; $i < $interval; $i += 60) {
+        sleep(min(60, $interval - $i));
+    }
 }
 
 /**
- * 读取JSON文件（简化版，避免依赖common.php）
+ * 读取JSON文件（简化版）
  */
 function json_read($file) {
     if (!file_exists($file)) return [];

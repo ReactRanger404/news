@@ -59,10 +59,13 @@ foreach ($active_sources as $source) {
     }
 }
 
-// 限制最大存储数
-$max_news = json_read(__DIR__ . '/config.json')['max_news'] ?? 2000;
-if (count($news) > $max_news) {
-    // 按爬取时间排序，保留最新的
+// 限制最大存储数，超出部分归档
+$max_news = json_read(__DIR__ . '/config.json')['max_news'] ?? 3500;
+$archived = archive_old_news($news, $max_news);
+if ($archived > 0) {
+    log_message("📦 已归档 {$archived} 条旧新闻，当前活跃 {$max_news} 条");
+} elseif (count($news) > $max_news) {
+    // 降级：直接裁剪
     usort($news, function ($a, $b) {
         return strtotime($b['crawl_time']) - strtotime($a['crawl_time']);
     });

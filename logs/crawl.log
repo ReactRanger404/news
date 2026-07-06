@@ -565,3 +565,5 @@
 [2026-06-29 02:58:08] ✅ [CSS-Tricks] 获取成功，新增 15 条
 [2026-06-29 02:58:12] ✅ [Smashing Magazine] 获取成功，新增 40 条
 [2026-06-29 02:58:13] ========== 爬取完成: 新增 1016 条, 失败 119 个, 耗时 324.36s ==========
+[2026-07-06 03:36:40] 📦 已归档 886 条旧新闻至 E:\git_warehouse\news/archive/
+[2026-07-06 03:36:40] PHP Error: [2] file_get_contents(data.json.backup): Failed to open stream: No such file or directory in Command line code:19

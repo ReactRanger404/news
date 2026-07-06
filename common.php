@@ -356,10 +356,17 @@ function pagination_html($current, $total, $base_url) {
 // ---------- 图片处理 ----------
 
 /**
+ * 判断新闻是否有真实图片（不是占位图）
+ */
+function has_real_image($item) {
+    return !empty($item['image']) && strpos($item['image'], 'data:image/svg') === false;
+}
+
+/**
  * 获取新闻图片URL，无图片时返回内联SVG占位图（无需外部请求）
  */
 function get_news_image($item) {
-    if (!empty($item['image'])) {
+    if (has_real_image($item)) {
         return $item['image'];
     }
     // 生成一个简单的内联SVG占位图（无外部依赖，国内网络友好）
@@ -371,6 +378,124 @@ function get_news_image($item) {
         . '<text x="200" y="170" text-anchor="middle" font-size="14" fill="hsl(' . $hue . ',20%,70%)" font-family="sans-serif">暂无图片</text>'
         . '</svg>';
     return 'data:image/svg+xml;charset=utf-8,' . rawurlencode($svg);
+}
+
+// ---------- 归档系统 ----------
+
+/**
+ * 归档超出上限的旧新闻
+ * 将最旧的新闻按发布日期分组写入 archive/YYYY-MM-DD.json
+ */
+function archive_old_news(&$news, $max_news) {
+    $config = json_read(__DIR__ . '/config.json');
+    if (empty($config['archive_enabled'])) return 0;
+
+    if (count($news) <= $max_news) return 0;
+
+    // 按发布时间升序排列（最旧的在前）
+    usort($news, function ($a, $b) {
+        $ta = strtotime($a['publish_time'] ?? $a['crawl_time'] ?? 'now');
+        $tb = strtotime($b['publish_time'] ?? $b['crawl_time'] ?? 'now');
+        return $ta - $tb;
+    });
+
+    $overflow = count($news) - $max_news;
+    $to_archive = array_slice($news, 0, $overflow);
+    $news = array_slice($news, $overflow);
+
+    $archive_dir = __DIR__ . '/' . ($config['archive_dir'] ?? 'archive');
+    if (!is_dir($archive_dir)) {
+        mkdir($archive_dir, 0755, true);
+    }
+
+    // 按日期分组归档
+    $grouped = [];
+    foreach ($to_archive as $item) {
+        $date = date('Y-m-d', strtotime($item['publish_time'] ?? $item['crawl_time'] ?? 'now'));
+        $grouped[$date][] = $item;
+    }
+
+    $archived_count = 0;
+    foreach ($grouped as $date => $items) {
+        $archive_file = $archive_dir . '/' . $date . '.json';
+        $existing = [];
+        if (file_exists($archive_file)) {
+            $existing = json_read($archive_file);
+        }
+        // 去重合并（按URL去重）
+        $existing_urls = [];
+        foreach ($existing as $e) {
+            $existing_urls[md5($e['url'])] = true;
+        }
+        foreach ($items as $item) {
+            if (!isset($existing_urls[md5($item['url'])])) {
+                $existing[] = $item;
+                $existing_urls[md5($item['url'])] = true;
+            }
+        }
+        json_write($archive_file, $existing);
+        $archived_count += count($items);
+    }
+
+    log_message("📦 已归档 {$archived_count} 条旧新闻至 {$archive_dir}/");
+    return $archived_count;
+}
+
+/**
+ * 读取归档新闻（支持日期范围）
+ * $start_date / $end_date: YYYY-MM-DD 格式，为空则不限制
+ */
+function read_archive_news($start_date = '', $end_date = '') {
+    $config = json_read(__DIR__ . '/config.json');
+    $archive_dir = __DIR__ . '/' . ($config['archive_dir'] ?? 'archive');
+    if (!is_dir($archive_dir)) return [];
+
+    $all = [];
+    $files = glob($archive_dir . '/*.json');
+    if (empty($files)) return [];
+
+    // 如果没指定日期范围，默认只读最近30天（性能优化）
+    if (empty($start_date) && empty($end_date)) {
+        $end_date = date('Y-m-d');
+        $start_date = date('Y-m-d', strtotime('-30 days'));
+    }
+
+    foreach ($files as $file) {
+        $fname = basename($file, '.json');
+        // 验证文件名是日期格式
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fname)) continue;
+
+        // 日期范围过滤
+        if (!empty($start_date) && $fname < $start_date) continue;
+        if (!empty($end_date) && $fname > $end_date) continue;
+
+        $items = json_read($file);
+        if (!empty($items)) {
+            $all = array_merge($all, $items);
+        }
+    }
+
+    return $all;
+}
+
+/**
+ * 获取归档中所有可用的日期列表
+ */
+function get_archive_dates() {
+    $config = json_read(__DIR__ . '/config.json');
+    $archive_dir = __DIR__ . '/' . ($config['archive_dir'] ?? 'archive');
+    if (!is_dir($archive_dir)) return [];
+
+    $dates = [];
+    $files = glob($archive_dir . '/*.json');
+    foreach ($files as $file) {
+        $fname = basename($file, '.json');
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $fname)) {
+            $dates[] = $fname;
+        }
+    }
+    rsort($dates);
+    return $dates;
 }
 
 /**

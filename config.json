@@ -1,8 +1,8 @@
 {
     "admin_user": "admin",
     "admin_pwd": "21232f297a57a5a743894a0e4a801fc3",
-    "crawl_interval": 15,
-    "max_news": 2000,
+    "crawl_interval": 300,
+    "max_news": 3500,
     "page_size": 80,
     "request_timeout": 10,
     "allow_industries": [
@@ -17,5 +17,7 @@
         "体育",
         "社会"
     ],
-    "cron_token": "osint_4261e763"
+    "cron_token": "osint_4261e763",
+    "archive_enabled": true,
+    "archive_dir": "archive"
 }
