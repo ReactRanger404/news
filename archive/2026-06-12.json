@@ -1,0 +1,28 @@
+[
+    {
+        "id": "news_6a41df40c3534_c3a66182",
+        "industry": "科技",
+        "source_name": "CSS-Tricks",
+        "source_url": "https:\/\/css-tricks.com\/feed\/",
+        "title": "There’s no need to include ‘navigation’ in your navigation labels",
+        "url": "https:\/\/css-tricks.com\/navigation-in-your-navigation-labels\/",
+        "description": "One of those nuances to keep in your back pocket when writing for screen readers.\n\nThere’s no need to include ‘navigation’ in your navigation labels originally handwritten and published with love on CSS-Tricks. You should really get the newsletter as well.",
+        "image": "https:\/\/i0.wp.com\/css-tricks.com\/wp-content\/uploads\/2026\/06\/stairwaynav.png",
+        "publish_time": "2026-06-12 15:08:38",
+        "crawl_time": "2026-06-29 02:58:08",
+        "status": "active"
+    },
+    {
+        "id": "news_6a41df40c352e_2a674b25",
+        "industry": "科技",
+        "source_name": "CSS-Tricks",
+        "source_url": "https:\/\/css-tricks.com\/feed\/",
+        "title": "Why Isn’t My 3D View Transition Working?",
+        "url": "https:\/\/css-tricks.com\/why-isnt-my-3d-view-transition-working\/",
+        "description": "Why isn't my 3D view transition working?! Sunkanmi tackles this frustration and offers an elegant fix for it.\n\nWhy Isn&#8217;t My 3D View Transition Working? originally handwritten and published with love on CSS-Tricks. You should really get the newsletter as well.",
+        "image": "https:\/\/i0.wp.com\/css-tricks.com\/wp-content\/uploads\/2026\/06\/cover.webp",
+        "publish_time": "2026-06-12 15:09:00",
+        "crawl_time": "2026-06-29 02:58:08",
+        "status": "active"
+    }
+]

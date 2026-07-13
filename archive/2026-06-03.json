@@ -1,0 +1,15 @@
+[
+    {
+        "id": "news_6a41df40c3545_a42a4132",
+        "industry": "科技",
+        "source_name": "CSS-Tricks",
+        "source_url": "https:\/\/css-tricks.com\/feed\/",
+        "title": "offset-path",
+        "url": "https:\/\/css-tricks.com\/almanac\/properties\/o\/offset-path\/",
+        "description": "The offset-path property in CSS defines a movement path for an element to follow during animation.\nThis property began life as motion-path. This, and all other related motion-* properties, are being renamed offset-* in the spec. We&#8217;re changing &#8230;\n\noffset-path originally handwritten and published with love on CSS-Tricks. You should really get the newsletter as well.",
+        "image": "https:\/\/i0.wp.com\/css-tricks.com\/wp-content\/uploads\/2016\/07\/funky-path.png?ssl=1",
+        "publish_time": "2026-06-03 15:02:38",
+        "crawl_time": "2026-06-29 02:58:08",
+        "status": "active"
+    }
+]

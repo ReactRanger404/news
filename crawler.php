@@ -32,6 +32,24 @@ log_message("========== 开始爬取任务 ==========");
 $sources = json_read(__DIR__ . '/sources.json');
 $news = json_read(__DIR__ . '/data.json');
 
+// 连通性预检：检查未检测或超过24小时的源
+$checked = 0;
+$one_day_ago = time() - 86400;
+foreach ($sources as &$src) {
+    $last_check = !empty($src['last_check']) ? strtotime($src['last_check']) : 0;
+    if ($last_check < $one_day_ago) {
+        $result = test_url($src['url'], 5);
+        $src['last_check'] = date('Y-m-d H:i:s');
+        $src['is_alive'] = $result['reachable'];
+        $checked++;
+        usleep(100000);
+    }
+}
+if ($checked > 0) {
+    json_write(__DIR__ . '/sources.json', $sources);
+    log_message("连通性检测: {$checked} 个源");
+}
+
 // 只爬取启用且可用的数据源
 $active_sources = array_filter($sources, function ($s) {
     return ($s['status'] ?? '') === 'enable' && !empty($s['is_alive']);
@@ -374,7 +392,14 @@ function fetch_og_image($url) {
 
     // 判断是否为logo/默认图（跳过）
     $is_logo_image = function($img_url) {
-        return preg_match('/\b(logo|icon|avatar|favicon|default|placeholder|banner|wx-test)\b/i', $img_url);
+        if (preg_match('/\b(logo|icon|avatar|favicon|default|placeholder|banner|wx-test)\b/i', $img_url)) return true;
+        // 文件归档路径（默认占位图，非文章内容图）
+        if (preg_match('#/fileftp/\d{4}/\d{2}/#i', $img_url)) return true;
+        // 站点主题/模板图（非文章内容）
+        if (preg_match('#/(?:homepage|theme|template|default|assets)/#i', $img_url)) return true;
+        // 小尺寸UI元素（toparr, btn, sprite等）
+        if (preg_match('/\b(toparr|btn|sprite|banner|thumb)\b/i', $img_url)) return true;
+        return false;
     };
 
     // 1. 提取 og:image
@@ -536,6 +561,10 @@ function merge_news($existing, $new_items, $source) {
         }
         if (empty($image) && !empty($item['url'])) {
             $image = fetch_og_image($item['url']);
+            // 二次检查：抓到的图也过滤默认图
+            if (!empty($image) && !has_real_image(['image' => $image])) {
+                $image = '';
+            }
             // 每抓一张图间隔300ms，防止被封
             usleep(300000);
         }

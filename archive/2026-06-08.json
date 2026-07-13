@@ -1,0 +1,15 @@
+[
+    {
+        "id": "news_6a41df40c353c_46301f32",
+        "industry": "科技",
+        "source_name": "CSS-Tricks",
+        "source_url": "https:\/\/css-tricks.com\/feed\/",
+        "title": "Scroll-Driven, Scroll-Triggered, Scroll States, and View Transitions",
+        "url": "https:\/\/css-tricks.com\/scroll-driven-scroll-triggered-scroll-states-and-view-transitions\/",
+        "description": "I've said one and mean another, and I've used one when I needed another. Comparing scroll-driven animations, scroll-triggered animations, container query scroll states, and view transitions for my future self.\n\nScroll-Driven, Scroll-Triggered, Scroll States, and View Transitions originally handwritten and published with love on CSS-Tricks. You should really get the newsletter as well.",
+        "image": "https:\/\/i0.wp.com\/css-tricks.com\/wp-content\/uploads\/2026\/04\/scroll-animations-view-transitions.webp",
+        "publish_time": "2026-06-08 13:00:34",
+        "crawl_time": "2026-06-29 02:58:08",
+        "status": "active"
+    }
+]

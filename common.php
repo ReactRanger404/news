@@ -16,28 +16,11 @@ set_error_handler(function ($severity, $message, $file, $line) {
 
 /**
  * 自动爬取调度：每次页面加载时检查是否需要爬取
- *
- * - 本地环境：距离上次爬取超过设定间隔时，在后台触发爬取
- * - Railway等云平台：不支持后台进程，请在Railway后台配置Cron Job，
- *   或使用 cron-job.org 定时访问 /cron.php?token=你的密钥
  */
 function check_auto_crawl() {
     $config = json_read(__DIR__ . '/config.json');
     $interval = ($config['crawl_interval'] ?? 15) * 60;
     $marker_file = __DIR__ . '/.last_crawl';
-
-    // 检测是否为Railway云环境（不支持后台进程）
-    if (getenv('RAILWAY_SERVICE_ID') !== false || getenv('RAILWAY_ENVIRONMENT') !== false) {
-        // 仅更新标记，不尝试后台启动（云平台不支持）
-        $last_crawl = 0;
-        if (file_exists($marker_file)) {
-            $last_crawl = (int) file_get_contents($marker_file);
-        }
-        if ((time() - $last_crawl) >= $interval) {
-            file_put_contents($marker_file, (string) time(), LOCK_EX);
-        }
-        return;
-    }
 
     $last_crawl = 0;
     if (file_exists($marker_file)) {
@@ -215,7 +198,8 @@ function test_url($url, $timeout = 10) {
     $ch = curl_init();
     curl_setopt_array($ch, [
         CURLOPT_URL => $url,
-        CURLOPT_NOBODY => true,
+        CURLOPT_NOBODY => false,
+        CURLOPT_RANGE => '0-2048',
         CURLOPT_TIMEOUT => $timeout,
         CURLOPT_CONNECTTIMEOUT => $timeout,
         CURLOPT_FOLLOWLOCATION => true,
@@ -364,6 +348,12 @@ function has_real_image($item) {
     if (strpos($img, 'data:image/svg') !== false) return false;
     // 过滤 logo/图标/默认图
     if (preg_match('/\b(logo|icon|avatar|favicon|default|wx-test|placeholder|banner)\b/i', $img)) return false;
+    // 过滤文件归档路径的默认占位图（同一URL被多篇文章共用）
+    if (preg_match('#/fileftp/\d{4}/\d{2}/#i', $img)) return false;
+    // 过滤站点主题/模板图（非文章内容）
+    if (preg_match('#/(?:homepage|theme|template|assets)/#i', $img)) return false;
+    // 过滤小尺寸UI元素
+    if (preg_match('/\b(toparr|btn|sprite|thumb)\b/i', $img)) return false;
     // 过滤小尺寸图片（疑似头像/图标）
     if (preg_match('/[?&](w|width|size)=\d{1,2}/i', $img)) return false;
     if (preg_match('/[\/_](?:w_?\d{1,2}|h_?\d{1,2}|s_?\d{1,2})[\/_]/i', $img)) return false;

@@ -61,6 +61,13 @@ $total_pages = max(1, ceil($total / $page_size));
 $offset = ($page - 1) * $page_size;
 $page_news = array_slice($filtered, $offset, $page_size);
 
+// ========== 归档日期列表（侧栏用） ==========
+$archive_dates = get_archive_dates();
+// 默认显示最近30天内的归档日期
+$recent_archive_dates = array_filter($archive_dates, function ($d) {
+    return strtotime($d) >= strtotime('-30 days');
+});
+
 ?>
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -211,6 +218,20 @@ $page_news = array_slice($filtered, $offset, $page_size);
         .fav-toggle-btn:hover { background: #FF8C00; color: white; border-color: #FF8C00; }
         .fav-toggle-btn.active { background: #FF8C00; color: white; }
 
+        /* 归档列表 */
+        .archive-list { display: flex; flex-wrap: wrap; gap: 4px; }
+        .archive-item {
+            display: inline-block; padding: 4px 10px; border-radius: 4px;
+            font-size: 12px; color: #666; background: #f5f0ea;
+            border: 1px solid #e8e0d0; transition: all 0.15s;
+            text-decoration: none;
+        }
+        .archive-item:hover { background: #FFE8E0; color: #CC0000; border-color: #fdd; }
+        .archive-item.active {
+            background: #CC0000; color: white; border-color: #CC0000; font-weight: 600;
+        }
+        .archive-item .archive-date { font-family: monospace; }
+
         /* 收藏列表 */
         .fav-stats { font-size: 12px; color: #aaa; text-align: center; margin-top: 4px; }
 
@@ -348,6 +369,42 @@ $page_news = array_slice($filtered, $offset, $page_size);
             cursor: pointer; transition: all 0.2s;
         }
         .modal-fav-btn:hover { background: #FF8C00; color: white; border-color: #FF8C00; }
+
+        /* ========== 今日热点 ========== */
+        .hot-card {
+            background: white; border-radius: 10px; margin-bottom: 16px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 1px solid #f0e8d8;
+            overflow: hidden;
+        }
+        .hot-card-header {
+            background: linear-gradient(135deg, #CC0000, #E71A1A);
+            color: white; padding: 10px 16px; font-size: 15px; font-weight: 700;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .hot-card-list { padding: 6px 12px; }
+        .hot-card-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 8px 6px; border-radius: 6px; cursor: pointer; transition: background 0.15s;
+        }
+        .hot-card-item:hover { background: #FFF5F0; }
+        .hot-card-item + .hot-card-item { border-top: 1px solid #f5f0ea; }
+        .hot-card-num {
+            width: 24px; height: 24px; border-radius: 4px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; color: #999; background: #f5f0ea; flex-shrink: 0;
+        }
+        .hot-card-num.r1 { background: #CC0000; color: white; }
+        .hot-card-num.r2 { background: #E06040; color: white; }
+        .hot-card-num.r3 { background: #E08060; color: white; }
+        .hot-card-content { flex: 1; min-width: 0; }
+        .hot-card-content a {
+            font-size: 14px; color: #333; font-weight: 500;
+            display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;
+            overflow: hidden; transition: color 0.15s;
+        }
+        .hot-card-content a:hover { color: #CC0000; }
+        .hot-card-meta { font-size: 12px; color: #aaa; margin-top: 3px; display: flex; gap: 10px; align-items: center; }
+        .hot-card-score { font-size: 12px; color: #CC0000; font-weight: 600; white-space: nowrap; }
 
         /* ========== 返回顶部 ========== */
         .back-top {
@@ -488,6 +545,31 @@ $page_news = array_slice($filtered, $offset, $page_size);
             <div class="fav-stats" id="favStats"></div>
         </div>
 
+        <!-- 历史归档卡片 -->
+        <?php if (!empty($recent_archive_dates) || $date_from): ?>
+        <div class="sidebar-card">
+            <h3>📦 历史归档</h3>
+            <?php if ($date_from && $date_from === $date_to): ?>
+            <div style="margin-bottom:8px;">
+                <span style="font-size:12px;color:#CC0000;font-weight:600;">当前查看：<?php echo $date_from; ?></span>
+                <a href="show.php" style="float:right;font-size:12px;color:#999;">✕ 返回全部</a>
+            </div>
+            <?php endif; ?>
+            <?php if (!empty($recent_archive_dates)): ?>
+            <div class="archive-list">
+                <?php foreach ($recent_archive_dates as $ad): ?>
+                <a href="?date_from=<?php echo $ad; ?>&date_to=<?php echo $ad; ?>"
+                   class="archive-item <?php echo ($date_from === $ad && $date_to === $ad) ? 'active' : ''; ?>">
+                    <span class="archive-date"><?php echo $ad; ?></span>
+                </a>
+                <?php endforeach; ?>
+            </div>
+            <?php else: ?>
+            <div style="font-size:12px;color:#aaa;text-align:center;">暂无归档数据</div>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
+
     </div>
 
     <!-- ====== 右栏：新闻列表 ====== -->
@@ -499,13 +581,14 @@ $page_news = array_slice($filtered, $offset, $page_size);
             <span class="page-info">共 <?php echo $total; ?> 条 · 第 <?php echo $page; ?>/<?php echo $total_pages; ?> 页</span>
             <div style="display:flex;gap:4px;">
             <?php
-            $base_url = 'show.php?page=';
-            if ($industry) $base_url .= '&industry=' . urlencode($industry);
-            if ($keyword) $base_url .= '&keyword=' . urlencode($keyword);
-            if ($date_from) $base_url .= '&date_from=' . urlencode($date_from);
-            if ($date_to) $base_url .= '&date_to=' . urlencode($date_to);
-            if ($view) $base_url .= '&view=' . urlencode($view);
-            if ($view === 'favorites' && $fav_ids_str) $base_url .= '&ids=' . urlencode($fav_ids_str);
+            $base_url = 'show.php?';
+            if ($industry) $base_url .= 'industry=' . urlencode($industry) . '&';
+            if ($keyword) $base_url .= 'keyword=' . urlencode($keyword) . '&';
+            if ($date_from) $base_url .= 'date_from=' . urlencode($date_from) . '&';
+            if ($date_to) $base_url .= 'date_to=' . urlencode($date_to) . '&';
+            if ($view) $base_url .= 'view=' . urlencode($view) . '&';
+            if ($view === 'favorites' && $fav_ids_str) $base_url .= 'ids=' . urlencode($fav_ids_str) . '&';
+            $base_url .= 'page=';
             if ($page > 1): ?>
             <a href="<?php echo $base_url . ($page - 1); ?>" class="prev-next">&laquo;</a>
             <?php endif;
@@ -528,6 +611,44 @@ $page_news = array_slice($filtered, $offset, $page_size);
             </div>
         </div>
         <?php endif; ?>
+
+        <!-- 今日热点 -->
+        <?php if (empty($industry) && empty($keyword) && empty($date_from) && empty($date_to) && $view !== 'favorites'):
+            $hot_news = get_hot_news($news);
+            if (!empty($hot_news)): ?>
+        <div class="hot-card">
+            <div class="hot-card-header">🔥 今日热点 · TOP5</div>
+            <div class="hot-card-list">
+                <?php foreach ($hot_news as $i => $hn):
+                    $item = $hn['item'];
+                    $rank = $i + 1;
+                    $rank_class = $rank === 1 ? 'r1' : ($rank === 2 ? 'r2' : ($rank === 3 ? 'r3' : ''));
+                    $time = format_time($item['publish_time'] ?? $item['crawl_time']);
+                ?>
+                <div class="hot-card-item" onclick="openNews(this)"
+                     data-title="<?php echo xss_clean($item['title']); ?>"
+                     data-desc="<?php echo xss_clean($item['description'] ?? ''); ?>"
+                     data-industry="<?php echo xss_clean($item['industry'] ?? ''); ?>"
+                     data-source="<?php echo xss_clean($item['source_name'] ?? ''); ?>"
+                     data-time="<?php echo xss_clean($item['publish_time'] ?? $item['crawl_time'] ?? ''); ?>"
+                     data-url="<?php echo xss_clean($item['url'] ?? ''); ?>"
+                     data-image="<?php echo has_real_image($item) ? xss_clean($item['image']) : ''; ?>"
+                     data-id="<?php echo xss_clean($item['id'] ?? ''); ?>"
+                     data-has-modal="1">
+                    <span class="hot-card-num <?php echo $rank_class; ?>"><?php echo $rank; ?></span>
+                    <div class="hot-card-content">
+                        <a href="javascript:void(0)"><?php echo xss_clean($item['title']); ?></a>
+                        <div class="hot-card-meta">
+                            <span class="tag tag-industry"><?php echo xss_clean($item['industry'] ?? ''); ?></span>
+                            <span>🕐 <?php echo $time; ?></span>
+                        </div>
+                    </div>
+                    <span class="hot-card-score"><?php echo $hn['score']; ?>🔥</span>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php endif; endif; ?>
 
         <!-- 新闻列表 -->
         <div class="news-list" id="newsList">
@@ -863,4 +984,43 @@ function get_hot_24h($all_news) {
         'industries' => $industries,
         'hot_keywords' => array_slice($word_freq, 0, 10, true),
     ];
+}
+
+/**
+ * 计算热度排行 TOP N
+ * 基于：时效性评分 + 热点关键词匹配加分
+ */
+function get_hot_news($all_news, $top_n = 5) {
+    $hot_24h = get_hot_24h($all_news);
+    $hot_keywords = array_keys($hot_24h['hot_keywords']);
+    $now = time();
+    $three_days = 86400 * 3;
+
+    $scored = [];
+    foreach ($all_news as $item) {
+        $t = strtotime($item['publish_time'] ?? $item['crawl_time'] ?? 'now');
+        $age = $now - $t;
+        if ($age > $three_days) continue;
+
+        // 时效性评分：越新越高，0-60分
+        $score = max(0, round(60 - ($age / $three_days) * 60));
+
+        // 热点关键词匹配：每个命中 +10，上限 +40
+        $title = $item['title'] ?? '';
+        foreach ($hot_keywords as $kw) {
+            if (mb_stripos($title, $kw) !== false) {
+                $score += 10;
+                if ($score >= 100) break;
+            }
+        }
+        $score = min(100, $score);
+
+        $scored[] = ['score' => $score, 'item' => $item];
+    }
+
+    usort($scored, function ($a, $b) {
+        return $b['score'] - $a['score'];
+    });
+
+    return array_slice($scored, 0, $top_n);
 }
