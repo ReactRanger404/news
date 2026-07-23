@@ -49,7 +49,9 @@ function check_auto_crawl() {
         if ($started) {
             file_put_contents($marker_file, (string) $now, LOCK_EX);
         } else {
-            log_message("⚠️ 无法启动后台爬虫：exec/popen 函数不可用");
+            log_message("⚠️ 无法启动后台爬虫：exec/popen 函数不可用，请改用 cron-job.org 触发");
+            // 更新标记避免每次访问都重试刷屏
+            file_put_contents($marker_file, (string) $now, LOCK_EX);
         }
     }
 }

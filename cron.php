@@ -65,10 +65,12 @@ set_time_limit(0);
 // 立即给 cron-job.org 返回响应，关闭连接
 $msg = "[" . date('Y-m-d H:i:s') . "] 爬虫开始执行（进程内）...\n";
 echo $msg;
-$size = ob_get_length();
+
+// 用 strlen 精确计算已输出字节数，避免 ob_get_length 在无缓冲时返回 false
+$size = strlen($msg);
 header("Content-Length: $size");
 header("Connection: close");
-ob_flush();
+if (ob_get_level()) ob_flush();
 flush();
 if (function_exists('fastcgi_finish_request')) {
     fastcgi_finish_request();
