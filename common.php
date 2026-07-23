@@ -485,14 +485,16 @@ function get_archive_dates() {
     if (!is_dir($archive_dir)) return [];
 
     $dates = [];
-    $files = glob($archive_dir . '/*.json');
-    foreach ($files as $file) {
-        $fname = basename($file, '.json');
-        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $fname)) {
-            $dates[] = $fname;
+    $dh = opendir($archive_dir);
+    if ($dh) {
+        while (($file = readdir($dh)) !== false) {
+            if (preg_match('/^(\d{4}-\d{2}-\d{2})\.json$/', $file, $m)) {
+                $dates[] = $m[1];
+            }
         }
+        closedir($dh);
+        rsort($dates);
     }
-    rsort($dates);
     return $dates;
 }
 

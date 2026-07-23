@@ -34,46 +34,14 @@ if (empty($token) || $token !== $expected_token) {
     exit;
 }
 
-$start_time = microtime(true);
-echo "[" . date('Y-m-d H:i:s') . "] 爬虫开始执行...\n";
-log_message("🔄 远程爬虫被触发");
+log_message("🔄 远程爬虫被触发（后台执行）");
 
-try {
-    // 先检测可用性（只检查上次未检测或超24小时的源）
-    $sources = json_read(__DIR__ . '/sources.json');
-    $checked = 0;
-    $updated = 0;
-    $one_day_ago = time() - 86400;
-
-    foreach ($sources as &$src) {
-        $last_check = !empty($src['last_check']) ? strtotime($src['last_check']) : 0;
-        if ($last_check < $one_day_ago) {
-            $result = test_url($src['url'], 5);
-            $src['last_check'] = date('Y-m-d H:i:s');
-            $src['is_alive'] = $result['reachable'];
-            $checked++;
-            if ($result['reachable'] !== !empty($src['is_alive'])) $updated++;
-            usleep(100000);
-        }
-    }
-
-    if ($checked > 0) {
-        json_write(__DIR__ . '/sources.json', $sources);
-        echo "连通性检测: {$checked} 个 (更新 {$updated} 个)\n";
-    }
-
-    // 执行爬取
-    $crawler_output = '';
-    ob_start();
-    require __DIR__ . '/crawler.php';
-    $crawler_output = ob_get_clean();
-    echo $crawler_output;
-
-} catch (Exception $e) {
-    echo "错误: " . $e->getMessage() . "\n";
-    log_message("❌ 远程爬虫异常: " . $e->getMessage());
+// 后台启动爬虫，不阻塞 HTTP 响应（cron-job.org 超时很短）
+$crawler_path = __DIR__ . '/crawler.php';
+if (PHP_OS_FAMILY === 'Windows') {
+    pclose(popen("start /B php \"{$crawler_path}\"", 'r'));
+} else {
+    exec("php \"{$crawler_path}\" > /dev/null 2>&1 &");
 }
 
-$elapsed = round(microtime(true) - $start_time, 2);
-echo "[" . date('Y-m-d H:i:s') . "] 爬虫完成，耗时 {$elapsed}s\n";
-log_message("✅ 远程爬虫完成，耗时 {$elapsed}s");
+echo "[" . date('Y-m-d H:i:s') . "] 爬虫已在后台启动\n";
