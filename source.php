@@ -7,7 +7,9 @@
  */
 
 require_once __DIR__ . '/common.php';
-copyright_notice();
+
+// 开启输出缓冲，确保 header() 重定向在任何意外输出后仍能工作
+ob_start();
 
 // 自动触发爬取检查（到时间自动在后台抓取）
 check_auto_crawl();
@@ -104,6 +106,7 @@ function handle_login() {
     }
 
     ?>
+    <?php copyright_notice(); ?>
     <!DOCTYPE html>
     <html lang="zh-CN">
     <head>
@@ -169,6 +172,7 @@ function show_dashboard() {
     $alive = count(array_filter($sources, fn($s) => !empty($s['is_alive'])));
 
     ?>
+    <?php copyright_notice(); ?>
     <!DOCTYPE html>
     <html lang="zh-CN">
     <head>

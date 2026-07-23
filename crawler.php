@@ -10,7 +10,6 @@
  */
 
 require_once __DIR__ . '/common.php';
-copyright_notice();
 
 // 如果作为库引入（被quick_crawl.php等调用），跳过主执行逻辑
 if (!empty($GLOBALS['_CRAWLER_SKIP_MAIN'])) {
@@ -23,6 +22,8 @@ $is_web = (php_sapi_name() !== 'cli');
 if ($is_web) {
     require_login();
 }
+
+copyright_notice();
 
 // ---------- 主流程 ----------
 
