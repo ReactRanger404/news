@@ -34,9 +34,9 @@ if (empty($token) || $token !== $expected_token) {
     exit;
 }
 
-log_message("🔄 远程爬虫被触发（后台执行）");
+log_message("🔄 远程爬虫被触发");
 
-// 后台启动爬虫，不阻塞 HTTP 响应（cron-job.org 超时很短）
+// 策略A：尝试用 exec 后台启动（独立进程，不阻塞）
 $crawler_path = __DIR__ . '/crawler.php';
 $started = false;
 
@@ -54,7 +54,29 @@ if (PHP_OS_FAMILY === 'Windows') {
 
 if ($started) {
     echo "[" . date('Y-m-d H:i:s') . "] 爬虫已在后台启动\n";
-} else {
-    echo "[" . date('Y-m-d H:i:s') . "] 错误：exec/popen 函数不可用，无法启动爬虫\n";
-    log_message("❌ 远程爬虫启动失败：exec/popen 函数不可用");
+    exit;
 }
+
+// 策略B：exec 不可用，在当前进程执行（先断开 HTTP 连接再跑）
+log_message("⚠️ exec 不可用，改用进程内执行");
+ignore_user_abort(true);
+set_time_limit(0);
+
+// 立即给 cron-job.org 返回响应，关闭连接
+$msg = "[" . date('Y-m-d H:i:s') . "] 爬虫开始执行（进程内）...\n";
+echo $msg;
+$size = ob_get_length();
+header("Content-Length: $size");
+header("Connection: close");
+ob_flush();
+flush();
+if (function_exists('fastcgi_finish_request')) {
+    fastcgi_finish_request();
+}
+
+// 在这里真正跑爬虫（HTTP 连接已断开，cron-job.org 不会超时）
+$crawler_output = '';
+ob_start();
+require $crawler_path;
+$crawler_output = ob_get_clean();
+log_message("✅ 远程爬虫完成（进程内执行）");
