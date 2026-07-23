@@ -38,10 +38,23 @@ log_message("🔄 远程爬虫被触发（后台执行）");
 
 // 后台启动爬虫，不阻塞 HTTP 响应（cron-job.org 超时很短）
 $crawler_path = __DIR__ . '/crawler.php';
+$started = false;
+
 if (PHP_OS_FAMILY === 'Windows') {
-    pclose(popen("start /B php \"{$crawler_path}\"", 'r'));
+    if (function_exists('popen')) {
+        pclose(popen("start /B php \"{$crawler_path}\"", 'r'));
+        $started = true;
+    }
 } else {
-    exec("php \"{$crawler_path}\" > /dev/null 2>&1 &");
+    if (function_exists('exec')) {
+        exec("php \"{$crawler_path}\" > /dev/null 2>&1 &");
+        $started = true;
+    }
 }
 
-echo "[" . date('Y-m-d H:i:s') . "] 爬虫已在后台启动\n";
+if ($started) {
+    echo "[" . date('Y-m-d H:i:s') . "] 爬虫已在后台启动\n";
+} else {
+    echo "[" . date('Y-m-d H:i:s') . "] 错误：exec/popen 函数不可用，无法启动爬虫\n";
+    log_message("❌ 远程爬虫启动失败：exec/popen 函数不可用");
+}

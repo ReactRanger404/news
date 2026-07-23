@@ -29,15 +29,27 @@ function check_auto_crawl() {
 
     $now = time();
     if (($now - $last_crawl) >= $interval) {
-        // 更新标记文件（防重复触发）
-        file_put_contents($marker_file, (string) $now, LOCK_EX);
-
         // 在后台启动爬虫，不阻塞当前页面
         $crawler_path = __DIR__ . '/crawler.php';
+        $started = false;
+
         if (PHP_OS_FAMILY === 'Windows') {
-            pclose(popen("start /B php \"{$crawler_path}\"", 'r'));
+            if (function_exists('popen')) {
+                pclose(popen("start /B php \"{$crawler_path}\"", 'r'));
+                $started = true;
+            }
         } else {
-            exec("php \"{$crawler_path}\" > /dev/null 2>&1 &");
+            if (function_exists('exec')) {
+                exec("php \"{$crawler_path}\" > /dev/null 2>&1 &");
+                $started = true;
+            }
+        }
+
+        // 只有实际启动了爬虫才更新标记，防止反复尝试执行禁用函数导致白屏
+        if ($started) {
+            file_put_contents($marker_file, (string) $now, LOCK_EX);
+        } else {
+            log_message("⚠️ 无法启动后台爬虫：exec/popen 函数不可用");
         }
     }
 }
