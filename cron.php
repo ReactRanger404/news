@@ -46,9 +46,14 @@ if (PHP_OS_FAMILY === 'Windows') {
         $started = true;
     }
 } else {
-    if (function_exists('exec')) {
-        exec("php \"{$crawler_path}\" > /dev/null 2>&1 &");
-        $started = true;
+    // function_exists('exec') 在 disable_functions 时依然返回 true
+    $exec_ok = function_exists('exec');
+    if ($exec_ok) {
+        $exec_ok = !in_array('exec', array_map('trim', explode(',', ini_get('disable_functions') ?: '')));
+    }
+    if ($exec_ok) {
+        exec("php \"{$crawler_path}\" > /dev/null 2>&1 &", $exec_output, $exit_code);
+        $started = ($exit_code === 0);
     }
 }
 
