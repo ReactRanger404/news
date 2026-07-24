@@ -55,6 +55,7 @@ if (PHP_OS_FAMILY === 'Windows') {
         $exec_ok = !in_array('exec', array_map('trim', explode(',', ini_get('disable_functions') ?: '')));
     }
     if ($exec_ok) {
+        $exit_code = -1; // 先设为 -1，exec 被禁用时不会修改这个值
         @exec("php \"{$crawler_path}\" > /dev/null 2>&1 &", $exec_output, $exit_code);
         // exec() 被禁用时不会执行，$exit_code 保持 -1
         // exec() 正常执行时，shell 可能因运行环境返回各种退出码

@@ -25,7 +25,10 @@ if ($is_web && !$is_cron_mode) {
     require_login();
 }
 
-copyright_notice();
+// cron 模式下不输出任何 HTML
+if (empty($GLOBALS['_CRON_MODE'])) {
+    copyright_notice();
+}
 
 // ---------- 主流程 ----------
 
@@ -104,10 +107,13 @@ json_write(__DIR__ . '/data.json', $news);
 $elapsed = round(microtime(true) - $start_time, 2);
 log_message("========== 爬取完成: 新增 {$total_fetched} 条, 失败 {$total_errors} 个, 耗时 {$elapsed}s ==========");
 
-if ($is_web) {
-    header('Location: source.php?msg=爬取完成，新增 ' . $total_fetched . ' 条新闻');
-} else {
-    echo "[" . date('Y-m-d H:i:s') . "] 爬取完成: 新增 {$total_fetched} 条, 耗时 {$elapsed}s\n";
+// cron 模式下由 cron.php 接管响应，不输出 HTTP 内容
+if (empty($GLOBALS['_CRON_MODE'])) {
+    if ($is_web) {
+        header('Location: source.php?msg=爬取完成，新增 ' . $total_fetched . ' 条新闻');
+    } else {
+        echo "[" . date('Y-m-d H:i:s') . "] 爬取完成: 新增 {$total_fetched} 条, 耗时 {$elapsed}s\n";
+    }
 }
 
 // ========== 核心函数 ==========
