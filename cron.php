@@ -55,12 +55,8 @@ if (PHP_OS_FAMILY === 'Windows') {
         $exec_ok = !in_array('exec', array_map('trim', explode(',', ini_get('disable_functions') ?: '')));
     }
     if ($exec_ok) {
-        $exit_code = -1; // 先设为 -1，exec 被禁用时不会修改这个值
-        @exec("php \"{$crawler_path}\" > /dev/null 2>&1 &", $exec_output, $exit_code);
-        // exec() 被禁用时不会执行，$exit_code 保持 -1
-        // exec() 正常执行时，shell 可能因运行环境返回各种退出码
-        // 只要不是 -1（函数未执行），就认为后台进程已尝试启动
-        $started = ($exit_code !== -1);
+        exec("php \"{$crawler_path}\" > /dev/null 2>&1 &", $exec_output, $exit_code);
+        $started = ($exit_code === 0);
     }
 }
 
@@ -69,8 +65,8 @@ if ($started) {
     exit;
 }
 
-// 策略B：exec 被 php.ini 禁用，在当前进程执行（先断开 HTTP 连接再跑）
-log_message("⚠️ exec 被禁用，改用进程内执行");
+// 策略B：exec 不可用，在当前进程执行（先断开 HTTP 连接再跑）
+log_message("⚠️ exec 不可用，改用进程内执行");
 ignore_user_abort(true);
 set_time_limit(0);
 
@@ -88,10 +84,10 @@ if (function_exists('fastcgi_finish_request')) {
     fastcgi_finish_request();
 }
 
-// 关闭 STDOUT，之后所有 echo/print 都静默失败，确保不输出任何内容
-fclose(STDOUT);
-
 // 在这里真正跑爬虫（HTTP 连接已断开，cron-job.org 不会超时）
+$crawler_output = '';
 $GLOBALS['_CRON_MODE'] = true; // 让 crawler.php 跳过登录检查
+ob_start();
 require $crawler_path;
+$crawler_output = ob_get_clean();
 log_message("✅ 远程爬虫完成（进程内执行）");
