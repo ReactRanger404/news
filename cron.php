@@ -88,11 +88,10 @@ if (function_exists('fastcgi_finish_request')) {
     fastcgi_finish_request();
 }
 
+// 关闭 STDOUT，之后所有 echo/print 都静默失败，确保不输出任何内容
+fclose(STDOUT);
+
 // 在这里真正跑爬虫（HTTP 连接已断开，cron-job.org 不会超时）
-// 用回调吞噬所有输出，确保爬虫的日志不会回流到 HTTP 响应
-while (ob_get_level()) ob_end_clean();
 $GLOBALS['_CRON_MODE'] = true; // 让 crawler.php 跳过登录检查
-ob_start(function($buf) { return ''; }); // 吞噬回调：任何输出都变空字符串
 require $crawler_path;
-ob_end_clean();
 log_message("✅ 远程爬虫完成（进程内执行）");
