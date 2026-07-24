@@ -56,7 +56,9 @@ if (PHP_OS_FAMILY === 'Windows') {
     }
     if ($exec_ok) {
         exec("php \"{$crawler_path}\" > /dev/null 2>&1 &", $exec_output, $exit_code);
-        $started = ($exit_code === 0);
+        // 某些环境(如Railway)的shell对后台命令(&)返回非0退出码
+        // 只要 exec 本身没抛异常、没报错，就认为启动成功
+        $started = ($exit_code !== 127 && $exit_code !== -1);
     }
 }
 
@@ -85,11 +87,10 @@ if (function_exists('fastcgi_finish_request')) {
 }
 
 // 在这里真正跑爬虫（HTTP 连接已断开，cron-job.org 不会超时）
-// 清空所有残留缓冲，确保爬虫的输出不会回流到 HTTP 响应
+// 用回调吞噬所有输出，确保爬虫的日志不会回流到 HTTP 响应
 while (ob_get_level()) ob_end_clean();
-
 $GLOBALS['_CRON_MODE'] = true; // 让 crawler.php 跳过登录检查
-ob_start();
+ob_start(function($buf) { return ''; }); // 吞噬回调：任何输出都变空字符串
 require $crawler_path;
-ob_end_clean(); // 丢弃爬虫输出，不给 cron-job.org 增加负担
+ob_end_clean();
 log_message("✅ 远程爬虫完成（进程内执行）");
