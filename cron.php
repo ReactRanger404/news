@@ -16,9 +16,6 @@
 
 require_once __DIR__ . '/common.php';
 
-// 开启输出缓冲，确保 header() 在任何输出后仍能正常工作
-ob_start();
-
 // 安全验证：必须带正确的token才能触发
 $token = get('token', '');
 $expected_token = getenv('CRON_TOKEN');
@@ -49,14 +46,9 @@ if (PHP_OS_FAMILY === 'Windows') {
         $started = true;
     }
 } else {
-    // function_exists('exec') 在 disable_functions 时依然返回 true
-    $exec_ok = function_exists('exec');
-    if ($exec_ok) {
-        $exec_ok = !in_array('exec', array_map('trim', explode(',', ini_get('disable_functions') ?: '')));
-    }
-    if ($exec_ok) {
-        exec("php \"{$crawler_path}\" > /dev/null 2>&1 &", $exec_output, $exit_code);
-        $started = ($exit_code === 0);
+    if (function_exists('exec')) {
+        exec("php \"{$crawler_path}\" > /dev/null 2>&1 &");
+        $started = true;
     }
 }
 
@@ -86,7 +78,6 @@ if (function_exists('fastcgi_finish_request')) {
 
 // 在这里真正跑爬虫（HTTP 连接已断开，cron-job.org 不会超时）
 $crawler_output = '';
-$GLOBALS['_CRON_MODE'] = true; // 让 crawler.php 跳过登录检查
 ob_start();
 require $crawler_path;
 $crawler_output = ob_get_clean();
