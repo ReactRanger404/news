@@ -401,7 +401,7 @@ function get_news_image($item) {
 
 /**
  * 归档超出上限的旧新闻
- * 将最旧的新闻按发布日期分组写入 archive/YYYY-MM-DD.json
+ * 将最旧的新闻按日期分组存入 archive.json（单文件，无需目录）
  */
 function archive_old_news(&$news, $max_news) {
     $config = json_read(__DIR__ . '/config.json');
@@ -420,41 +420,30 @@ function archive_old_news(&$news, $max_news) {
     $to_archive = array_slice($news, 0, $overflow);
     $news = array_slice($news, $overflow);
 
-    $archive_dir = __DIR__ . '/' . ($config['archive_dir'] ?? 'archive');
-    if (!is_dir($archive_dir)) {
-        mkdir($archive_dir, 0755, true);
-    }
+    // 读取已有归档数据
+    $archive_file = __DIR__ . '/archive.json';
+    $archive_data = json_read($archive_file);
+    if (empty($archive_data)) $archive_data = [];
 
     // 按日期分组归档
-    $grouped = [];
+    $archived_count = 0;
     foreach ($to_archive as $item) {
         $date = date('Y-m-d', strtotime($item['publish_time'] ?? $item['crawl_time'] ?? 'now'));
-        $grouped[$date][] = $item;
+        if (!isset($archive_data[$date])) $archive_data[$date] = [];
+        // 按URL去重
+        $url_key = md5($item['url']);
+        $exists = false;
+        foreach ($archive_data[$date] as $existing) {
+            if (md5($existing['url']) === $url_key) { $exists = true; break; }
+        }
+        if (!$exists) {
+            $archive_data[$date][] = $item;
+            $archived_count++;
+        }
     }
 
-    $archived_count = 0;
-    foreach ($grouped as $date => $items) {
-        $archive_file = $archive_dir . '/' . $date . '.json';
-        $existing = [];
-        if (file_exists($archive_file)) {
-            $existing = json_read($archive_file);
-        }
-        // 去重合并（按URL去重）
-        $existing_urls = [];
-        foreach ($existing as $e) {
-            $existing_urls[md5($e['url'])] = true;
-        }
-        foreach ($items as $item) {
-            if (!isset($existing_urls[md5($item['url'])])) {
-                $existing[] = $item;
-                $existing_urls[md5($item['url'])] = true;
-            }
-        }
-        json_write($archive_file, $existing);
-        $archived_count += count($items);
-    }
-
-    log_message("📦 已归档 {$archived_count} 条旧新闻至 {$archive_dir}/");
+    json_write($archive_file, $archive_data);
+    log_message("📦 已归档 {$archived_count} 条旧新闻至 archive.json");
     return $archived_count;
 }
 
@@ -463,13 +452,11 @@ function archive_old_news(&$news, $max_news) {
  * $start_date / $end_date: YYYY-MM-DD 格式，为空则不限制
  */
 function read_archive_news($start_date = '', $end_date = '') {
-    $config = json_read(__DIR__ . '/config.json');
-    $archive_dir = __DIR__ . '/' . ($config['archive_dir'] ?? 'archive');
-    if (!is_dir($archive_dir)) return [];
+    $archive_file = __DIR__ . '/archive.json';
+    if (!file_exists($archive_file)) return [];
 
-    $all = [];
-    $files = glob($archive_dir . '/*.json');
-    if (empty($files)) return [];
+    $archive_data = json_read($archive_file);
+    if (empty($archive_data)) return [];
 
     // 如果没指定日期范围，默认只读最近30天（性能优化）
     if (empty($start_date) && empty($end_date)) {
@@ -477,16 +464,10 @@ function read_archive_news($start_date = '', $end_date = '') {
         $start_date = date('Y-m-d', strtotime('-30 days'));
     }
 
-    foreach ($files as $file) {
-        $fname = basename($file, '.json');
-        // 验证文件名是日期格式
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fname)) continue;
-
-        // 日期范围过滤
-        if (!empty($start_date) && $fname < $start_date) continue;
-        if (!empty($end_date) && $fname > $end_date) continue;
-
-        $items = json_read($file);
+    $all = [];
+    foreach ($archive_data as $date => $items) {
+        if (!empty($start_date) && $date < $start_date) continue;
+        if (!empty($end_date) && $date > $end_date) continue;
         if (!empty($items)) {
             $all = array_merge($all, $items);
         }
@@ -499,21 +480,14 @@ function read_archive_news($start_date = '', $end_date = '') {
  * 获取归档中所有可用的日期列表
  */
 function get_archive_dates() {
-    $config = json_read(__DIR__ . '/config.json');
-    $archive_dir = __DIR__ . '/' . ($config['archive_dir'] ?? 'archive');
-    if (!is_dir($archive_dir)) return [];
+    $archive_file = __DIR__ . '/archive.json';
+    if (!file_exists($archive_file)) return [];
 
-    $dates = [];
-    $dh = opendir($archive_dir);
-    if ($dh) {
-        while (($file = readdir($dh)) !== false) {
-            if (preg_match('/^(\d{4}-\d{2}-\d{2})\.json$/', $file, $m)) {
-                $dates[] = $m[1];
-            }
-        }
-        closedir($dh);
-        rsort($dates);
-    }
+    $archive_data = json_read($archive_file);
+    if (empty($archive_data)) return [];
+
+    $dates = array_keys($archive_data);
+    rsort($dates);
     return $dates;
 }
 

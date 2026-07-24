@@ -36,12 +36,9 @@ echo "  每 " . ($interval / 60) . " 分钟自动执行一次爬取\n";
 echo "  按 Ctrl+C 停止\n";
 echo "============================================\n\n";
 
-// 确保 archive 目录存在
-$archive_dir = __DIR__ . '/' . ($config['archive_dir'] ?? 'archive');
-if (!is_dir($archive_dir)) {
-    mkdir($archive_dir, 0755, true);
-    echo "[初始化] 创建归档目录: {$archive_dir}\n";
-}
+// 归档使用 archive.json 单文件（无需目录）
+$archive_file = __DIR__ . '/archive.json';
+echo "[初始化] 归档文件: {$archive_file}\n";
 
 $run_count = 0;
 
