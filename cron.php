@@ -85,9 +85,11 @@ if (function_exists('fastcgi_finish_request')) {
 }
 
 // 在这里真正跑爬虫（HTTP 连接已断开，cron-job.org 不会超时）
-$crawler_output = '';
+// 清空所有残留缓冲，确保爬虫的输出不会回流到 HTTP 响应
+while (ob_get_level()) ob_end_clean();
+
 $GLOBALS['_CRON_MODE'] = true; // 让 crawler.php 跳过登录检查
 ob_start();
 require $crawler_path;
-$crawler_output = ob_get_clean();
+ob_end_clean(); // 丢弃爬虫输出，不给 cron-job.org 增加负担
 log_message("✅ 远程爬虫完成（进程内执行）");
