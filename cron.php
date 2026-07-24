@@ -51,16 +51,15 @@ if (PHP_OS_FAMILY === 'Windows') {
 } else {
     // function_exists('exec') 在 disable_functions 时依然返回 true
     $exec_ok = function_exists('exec');
-    $exec_disabled_by_ini = false;
     if ($exec_ok) {
         $exec_ok = !in_array('exec', array_map('trim', explode(',', ini_get('disable_functions') ?: '')));
-        if (!$exec_ok) $exec_disabled_by_ini = true;
     }
     if ($exec_ok) {
-        exec("php \"{$crawler_path}\" > /dev/null 2>&1 &", $exec_output, $exit_code);
-        // 某些环境(如Railway)的shell对后台命令(&)返回非0退出码
-        // 只要不是 php 找不到(127)，就认为启动成功
-        $started = ($exit_code !== 127 && $exit_code !== -1);
+        @exec("php \"{$crawler_path}\" > /dev/null 2>&1 &", $exec_output, $exit_code);
+        // exec() 被禁用时不会执行，$exit_code 保持 -1
+        // exec() 正常执行时，shell 可能因运行环境返回各种退出码
+        // 只要不是 -1（函数未执行），就认为后台进程已尝试启动
+        $started = ($exit_code !== -1);
     }
 }
 
@@ -69,15 +68,7 @@ if ($started) {
     exit;
 }
 
-// 策略B：exec 用不了时的后备方案
-// 如果 exec 是被 php.ini 禁用的（老师服务器），进程内跑爬虫
-// 如果 exec 可用但 php 命令找不到（Railway），跳过爬取避免 output too large
-if (!$exec_disabled_by_ini) {
-    log_message("⚠️ exec 可用但 php 命令不存在，跳过爬取（等待页面访问触发）");
-    echo "[" . date('Y-m-d H:i:s') . "] php 命令不存在，跳过爬取\n";
-    exit;
-}
-
+// 策略B：exec 被 php.ini 禁用，在当前进程执行（先断开 HTTP 连接再跑）
 log_message("⚠️ exec 被禁用，改用进程内执行");
 ignore_user_abort(true);
 set_time_limit(0);
