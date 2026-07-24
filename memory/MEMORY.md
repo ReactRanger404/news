@@ -1,0 +1,1 @@
+- [教师服务器部署问题](teacher-deployment-issue.md) — exec()被禁用导致爬虫静默失败的根因与修复

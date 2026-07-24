@@ -16,10 +16,12 @@ if (!empty($GLOBALS['_CRAWLER_SKIP_MAIN'])) {
     return; // 只加载函数定义
 }
 
-// 允许命令行和Web两种运行模式
+// 允许命令行、Web和管理后台三种运行模式
 $is_web = (php_sapi_name() !== 'cli');
+// 通过 cron.php 进程内执行时，跳过登录检查
+$is_cron_mode = !empty($GLOBALS['_CRON_MODE']);
 
-if ($is_web) {
+if ($is_web && !$is_cron_mode) {
     require_login();
 }
 

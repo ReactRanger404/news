@@ -16,6 +16,9 @@
 
 require_once __DIR__ . '/common.php';
 
+// 开启输出缓冲，确保 header() 在任何输出后仍能正常工作
+ob_start();
+
 // 安全验证：必须带正确的token才能触发
 $token = get('token', '');
 $expected_token = getenv('CRON_TOKEN');
@@ -83,6 +86,7 @@ if (function_exists('fastcgi_finish_request')) {
 
 // 在这里真正跑爬虫（HTTP 连接已断开，cron-job.org 不会超时）
 $crawler_output = '';
+$GLOBALS['_CRON_MODE'] = true; // 让 crawler.php 跳过登录检查
 ob_start();
 require $crawler_path;
 $crawler_output = ob_get_clean();
